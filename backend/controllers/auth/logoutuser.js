@@ -19,7 +19,8 @@ export default async function logoutUser(req, res) {
       }
     }
 
-    const userId = req.user?.id || req.body.userId;
+    const userId = req?.accesstoken?.id;
+    console.log(userId);
     if (userId) {
       await UserModel.updateOne({ userId }, { $unset: { refreshToken: "" } });
     }
