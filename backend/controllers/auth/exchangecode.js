@@ -1,3 +1,4 @@
+
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import UserModel from "../../models/user/userSchema.js"; 
@@ -36,31 +37,52 @@ export default async function exchangeToken(req, res) {
 
     const ghUser = userResponse.data;
 
-    let user = await UserModel.findOne({ userId: ghUser.id }); 
 
+    // Encrypting the GitHub token using jwt before sorting
+    const encryptedAccessToken = jwt.sign(
+      { access_token },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    let user = await UserModel.findOne({ userId: ghUser.id });
     if (!user) {
       user = new UserModel({
         userId: ghUser.id,
         email: ghUser.email || `${ghUser.login}@users.noreply.github.com`,
         username: ghUser.login,
-        accessToken: access_token,
+        accessToken: encryptedAccessToken,
       });
     } else {
-      user.accessToken = access_token;
+      user.accessToken = encryptedAccessToken;
     }
 
-    await user.save();
-
-    const token = jwt.sign(
+    // Generate access and refresh tokens
+    const accessToken = jwt.sign(
       {
         id: user.userId,
         username: user.username,
         email: user.email,
       },
       process.env.JWT_SECRET_KEY,
-      { expiresIn: "2h" } 
+      { expiresIn: "2hr" } // access token vaise 1hr ya usse kam rkhna chiye
     );
-    res.cookie("token", token, { httpOnly: true, maxAge: 2* 60 * 60 * 1000 });
+
+    const refreshToken = jwt.sign(
+      {
+        id: user.userId,
+        username: user.username,
+        email: user.email,
+      },
+      process.env.JWT_REFRESH_SECRET_KEY,
+      { expiresIn: "7d" } // refresh token abhi k liye 7 din bad expire hoga
+    );
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie("accesstoken", accessToken, { httpOnly: true, maxAge:  2 * 60 * 60 * 1000 });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
     res.status(201).json({
       success: true,
       message: "User logged in successfully",

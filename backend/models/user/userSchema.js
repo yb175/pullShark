@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, required: true },
   email: { type: String, required: true },
   accessToken: { type: String, required: true },
+  refreshToken: { type: String },// will be set when user logs in
   connectedRepos: [connectedRepoSchema],
   usageStats: { testRuns: { type: Number, default: 0 } },
 }, { timestamps: true });
