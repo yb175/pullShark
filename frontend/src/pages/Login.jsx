@@ -1,7 +1,6 @@
-// src/components/Login.js
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { startGithubLoginAction, exchangeCodeThunk, clearError } from "../slice/authSlice";
+import { startGithubLoginAction, clearError } from "../slice/authSlice";
 import { Link, useNavigate } from "react-router";
 
 export default function Login() {
@@ -9,48 +8,32 @@ export default function Login() {
   const navigate = useNavigate();
   const { loading, error, authenticated } = useSelector((state) => state.auth);
 
-  // Handle OAuth callback
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    
-    if (code) {
-      dispatch(exchangeCodeThunk(code)).then((res) => {
-        if (!res.error) {
-          // Clear the code from URL
-          window.history.replaceState({}, document.title, "/login");
-          navigate("/");
-        }
-      });
+    if (authenticated) {
+      navigate("/repo");
     }
-  }, [dispatch, navigate]);
+  }, [authenticated, navigate]);
 
-  // Clear error when component unmounts
   useEffect(() => {
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (authenticated) {
-      navigate("/");
-    }
-  }, [authenticated, navigate]);
-
   const handleGithubLogin = () => {
     dispatch(startGithubLoginAction());
   };
 
+  if (authenticated) {
+    return null; // Will redirect due to useEffect
+  }
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-black to-gray-950 text-white px-4">
-      <div className="w-full max-w-md mx-auto relative p-10 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,255,240,0.08)] transition-all duration-300">
+      <div className="w-full max-w-md mx-auto relative p-10 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,255,240,0.08)]">
         <div className="absolute inset-0 rounded-2xl -z-10 opacity-30 bg-gradient-to-r from-[#00fff0] to-[#8b2fff] blur-3xl"></div>
 
-        <h2 className="text-4xl font-bold mb-6 text-center tracking-tight">
-          Welcome Back
-        </h2>
+        <h2 className="text-4xl font-bold mb-6 text-center">Welcome Back</h2>
         <p className="text-center text-white/60 mb-8 text-sm">
           Log in with GitHub to continue your code reviews
         </p>
@@ -64,7 +47,7 @@ export default function Login() {
         <button
           onClick={handleGithubLogin}
           disabled={loading}
-          className="w-full px-5 py-3 rounded-md font-semibold bg-white text-black hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition disabled:opacity-50 flex items-center justify-center gap-3"
+          className="w-full px-5 py-3 rounded-md font-semibold bg-white text-black hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-3"
         >
           {loading ? (
             "Connecting to GitHub..."
@@ -80,7 +63,7 @@ export default function Login() {
 
         <p className="text-center mt-6 text-sm text-white/60">
           Don't have an account?{" "}
-          <Link to="/signup" className="text-[#00fff0] ml-1 hover:underline">
+          <Link to="/signup" className="text-[#00fff0] hover:underline">
             Sign up
           </Link>
         </p>

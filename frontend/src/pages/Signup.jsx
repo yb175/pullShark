@@ -1,56 +1,39 @@
-// src/components/Signup.js
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { startGithubLoginAction, exchangeCodeThunk, clearError } from "../slice/authSlice";
+import { startGithubLoginAction, clearError } from "../slice/authSlice";
 import { Link, useNavigate } from "react-router";
 
 export default function Signup() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, authenticated } = useSelector((s) => s.auth);
+  const { loading, error, authenticated } = useSelector((state) => state.auth);
 
-  // Handle OAuth callback
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    
-    if (code) {
-      dispatch(exchangeCodeThunk(code)).then((res) => {
-        if (!res.error) {
-          // Clear the code from URL
-          window.history.replaceState({}, document.title, "/signup");
-          navigate("/");
-        }
-      });
+    if (authenticated) {
+      navigate("/repo");
     }
-  }, [dispatch, navigate]);
+  }, [authenticated, navigate]);
 
-  // Clear error when component unmounts
   useEffect(() => {
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
 
-  // Redirect if already authenticated
-  useEffect(() => {
-    if (authenticated) {
-      navigate("/");
-    }
-  }, [authenticated, navigate]);
-
   const handleGithubSignup = () => {
     dispatch(startGithubLoginAction());
   };
 
+  if (authenticated) {
+    return null;
+  }
+
   return (
     <section className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-black to-gray-950 text-white px-4">
-      <div className="w-full max-w-md mx-auto relative p-10 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,255,240,0.08)] transition-all duration-300">
+      <div className="w-full max-w-md mx-auto relative p-10 rounded-2xl bg-black/30 border border-white/10 backdrop-blur-xl shadow-[0_0_60px_rgba(0,255,240,0.08)]">
         <div className="absolute inset-0 rounded-2xl -z-10 opacity-30 bg-gradient-to-r from-[#00fff0] to-[#8b2fff] blur-3xl"></div>
 
-        <h2 className="text-4xl font-bold mb-6 text-center tracking-tight">
-          Create Account
-        </h2>
+        <h2 className="text-4xl font-bold mb-6 text-center">Create Account</h2>
         <p className="text-center text-white/60 mb-8 text-sm">
           Join us with GitHub and start reviewing code instantly
         </p>
@@ -64,7 +47,7 @@ export default function Signup() {
         <button
           onClick={handleGithubSignup}
           disabled={loading}
-          className="w-full px-5 py-3 rounded-md font-semibold bg-white text-black hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition disabled:opacity-50 flex items-center justify-center gap-3"
+          className="w-full px-5 py-3 rounded-md font-semibold bg-white text-black hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-3"
         >
           {loading ? (
             "Connecting to GitHub..."
@@ -80,7 +63,7 @@ export default function Signup() {
 
         <p className="text-center mt-6 text-sm text-white/60">
           Already have an account?{" "}
-          <Link to="/login" className="text-[#00fff0] ml-1 hover:underline">
+          <Link to="/login" className="text-[#00fff0] hover:underline">
             Login
           </Link>
         </p>

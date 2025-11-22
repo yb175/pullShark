@@ -56,6 +56,7 @@ export default async function exchangeToken(req, res) {
         userId: ghUser.id,
         email: ghUser.email || `${ghUser.login}@users.noreply.github.com`,
         username: ghUser.login,
+        avatarUrl: ghUser.avatar_url,
         accessToken: access_token,
         accessTokenExpiresAt: ghAccessTokenExpiresAt,
         refreshToken: refresh_token,
@@ -66,6 +67,7 @@ export default async function exchangeToken(req, res) {
       user.accessTokenExpiresAt = ghAccessTokenExpiresAt;
       user.refreshToken = refresh_token;
       user.refreshTokenExpiresAt = ghRefreshTokenExpiresAt;
+      user.avatarUrl = ghUser.avatar_url;
     }
 
     const accessToken = jwt.sign(
@@ -73,6 +75,7 @@ export default async function exchangeToken(req, res) {
         id: user.userId,
         username: user.username,
         email: user.email,
+        avatarUrl: user.avatarUrl,
         ghTokenExpiresAt: ghAccessTokenExpiresAt,
         ghAccessToken: access_token,
       },
@@ -94,6 +97,7 @@ export default async function exchangeToken(req, res) {
         username: user.username,
         email: user.email,
         userId: user.userId,
+        avatarUrl: user.avatarUrl,
       },
     });
   } catch (err) {
