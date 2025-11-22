@@ -28,9 +28,11 @@ function Header() {
       </nav>
 
       <div className="flex items-center gap-4">
+        <Link to="/login">
         <button className="px-4 py-2 rounded-md bg-gradient-to-r from-[#00fff0] to-[#8b2fff] text-black font-semibold shadow-lg hover:scale-[1.01] transform transition">
           Get Started
         </button>
+        </Link>
       </div>
     </div>
   </header>
