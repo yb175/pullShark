@@ -3,42 +3,40 @@ import React from "react";
 function ProductFeatures() {
   const features = [
     {
-      title: "Adaptive AI Review Engine",
-      desc: "A self-learning review system that evolves with every PR, adapting to your coding patterns, tech stack, and architectural decisions.",
+      title: "Adaptive Edge-Case Engine",
+      desc: "AI that learns your system’s behavior and automatically identifies unusual conditions, rare flows, and hidden failure patterns.",
     },
     {
-      title: "Instant Issue Detection & Smart Fixes",
-      desc: "Spot bugs, performance leaks, and architectural flaws in real time — paired with one-click intelligent fixes.",
+      title: "Real-Time Failure Prediction",
+      desc: "Detect instability before it becomes a bug — with continuous monitoring of states, constraints, and behavioral anomalies.",
     },
     {
-      title: "Crystal-Clear PR Intelligence",
-      desc: "Auto-generated visual diffs, impact summaries, dependency trails, and change heatmaps for rapid comprehension.",
+      title: "Environment-Aware Analysis",
+      desc: "Understand how your product behaves across networks, devices, and scenarios through deep multi-condition modeling.",
     },
     {
-      title: "Developer-First Review Insights",
-      desc: "Gain contextual insights, highlight risk areas, map related modules, and receive smart improvement suggestions.",
+      title: "High-Signal Insights, Zero Noise",
+      desc: "Only actionable, meaningful alerts. No clutter, no false positives — just precise detection of reliability risks.",
     },
     {
-      title: "Agentic AI Dev Companion",
-      desc: "Chat with your codebase. Generate tests, refactor code, draft PR descriptions, and automate routine tasks effortlessly.",
+      title: "AI-Driven Test Intelligence",
+      desc: "Generate smart test cases that target edge conditions, system boundaries, and potential failure triggers automatically.",
     },
     {
-      title: "High-Signal Analysis. Zero Noise.",
-      desc: "A refined blend of static analysis, LLM reasoning, and custom rules that provide accurate, actionable insights only.",
+      title: "Full-Stack Stability Mapping",
+      desc: "Visualize risk zones, dependency impacts, and weak points across your system to proactively strengthen reliability.",
     },
-  ];
+  ]
 
   return (
     <section className="py-28 bg-gradient-to-b from-gray-950 to-black">
-      {/* Glow Effects */}
-      
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         <h2 className="text-4xl md:text-5xl font-bold text-center text-white tracking-tight mb-6">
-          Next‑Gen AI Code Review Platform
+          AI-Powered Edge Case & Reliability Platform
         </h2>
         <p className="text-center text-white/60 max-w-2xl mx-auto mb-16 text-lg">
-          Built for modern engineering teams — faster reviews, fewer bugs, and stronger ship confidence.
+          Built for engineering teams who demand stability, predictable performance, and failure-proof releases, without hidden risks slipping into production.
         </p>
 
         <div className="grid md:grid-cols-2 gap-10">

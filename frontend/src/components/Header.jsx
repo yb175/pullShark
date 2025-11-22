@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router";
 function Header() {
  return (
  <header className="sticky top-0 z-50 backdrop-blur-md bg-black/30 border-b border-white/5">

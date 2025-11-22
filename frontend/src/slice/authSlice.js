@@ -1,20 +1,41 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { checkAuthStatus, exchangeCodeForSession, logout, startGithubLogin } from "../api/auth";
 
-// Placeholder async login call (replace with backend later)
-export const loginUser = createAsyncThunk(
-  "auth/loginUser",
-  async (credentials, { rejectWithValue }) => {
+// Check authentication status
+export const checkAuthStatusThunk = createAsyncThunk(
+  "auth/checkStatus",
+  async (_, { rejectWithValue }) => {
     try {
-      // TODO: Replace later with your backend API
-      // const res = await axios.post("/login", credentials);
-      // return res.data;
+      const res = await checkAuthStatus();
+      return res;
+    } catch (e) {
+      return rejectWithValue(e?.response?.data || { message: "Not authenticated" });
+    }
+  }
+);
 
-      return {
-        success: true,
-        user: { email: credentials.email },
-      };
-    } catch (err) {
-      return rejectWithValue("Login failed");
+// Exchange GitHub code for session
+export const exchangeCodeThunk = createAsyncThunk(
+  "auth/exchangeCode",
+  async (code, { rejectWithValue }) => {
+    try {
+      const res = await exchangeCodeForSession(code);
+      return res.data; // { username, email, userId }
+    } catch (e) {
+      return rejectWithValue(e?.response?.data || { message: "Login failed" });
+    }
+  }
+);
+
+// Logout
+export const logoutThunk = createAsyncThunk(
+  "auth/logout",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await logout();
+      return res;
+    } catch (e) {
+      return rejectWithValue(e?.response?.data || { message: "Logout failed" });
     }
   }
 );
@@ -22,33 +43,75 @@ export const loginUser = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    user: null,
+    authenticated: false,
+    user: null, 
     loading: false,
     error: null,
   },
-
   reducers: {
-    logout: (state) => {
-      state.user = null;
+    // Action for starting GitHub OAuth redirect
+    startGithubLoginAction: () => {
+      startGithubLogin();
+    },
+    // Clear error
+    clearError: (state) => {
+      state.error = null;
+    },
+    // Set user data (optional, for direct user setting)
+    setUser: (state, action) => {
+      state.user = action.payload;
+      state.authenticated = true;
     },
   },
-
   extraReducers: (builder) => {
     builder
-      .addCase(loginUser.pending, (state) => {
+      // checkAuthStatus
+      .addCase(checkAuthStatusThunk.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(loginUser.fulfilled, (state, action) => {
+      .addCase(checkAuthStatusThunk.fulfilled, (state) => {
         state.loading = false;
-        state.user = action.payload.user;
+        state.authenticated = true;
       })
-      .addCase(loginUser.rejected, (state, action) => {
+      .addCase(checkAuthStatusThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.payload;
+        state.authenticated = false;
+        state.user = null;
+        state.error = action.payload?.message || "";
+      })
+      // exchangeCode
+      .addCase(exchangeCodeThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(exchangeCodeThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        state.authenticated = true;
+        state.user = action.payload;
+      })
+      .addCase(exchangeCodeThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.authenticated = false;
+        state.user = null;
+        state.error = action.payload?.message || "";
+      })
+      // logout
+      .addCase(logoutThunk.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutThunk.fulfilled, (state) => {
+        state.loading = false;
+        state.authenticated = false;
+        state.user = null;
+      })
+      .addCase(logoutThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "";
       });
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { startGithubLoginAction, clearError, setUser } = authSlice.actions;
 export default authSlice.reducer;
+

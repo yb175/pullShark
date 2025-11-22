@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 
 function Hero() {
   return (
@@ -13,14 +13,14 @@ function Hero() {
             </span>
 
             <h1 className="font-jetmono text-4xl md:text-6xl leading-tight font-bold text-white drop-shadow-sm">
-              Supercharge Your PRs with
+              Automatically Detect Hidden Edge Cases
               <span className="block mt-2 text-white/80 font-semibold text-3xl md:text-5xl">
-                AI-Driven Code Reviews
+                Before They Break Your Builds
               </span>
             </h1>
 
             <p className="mt-6 text-white/60 max-w-xl leading-relaxed text-base md:text-lg">
-              PullShark delivers context-aware, self-learning AI code reviews that evolve with every commit. Seamlessly integrated with GitHub, MCP, and developer workflows.
+              Inspects code behavior, test flows, and runtime conditions, uncovering edge cases developers miss during QA. It flags unstable logic and risky interactions, before they ever reach staging or production.
             </p>
 
             <div className="mt-8 flex gap-4">
@@ -69,4 +69,4 @@ function Hero() {
   );
 }
 
-export default Hero;
+export default Hero
