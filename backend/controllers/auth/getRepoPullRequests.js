@@ -14,7 +14,7 @@ export default async function getRepoPullRequests(req, res) {
 
     // Repo name comes from the URL; owner is the authenticated user's GitHub username
     const repo = req.params.repo;
-    console.log(repo);
+    // console.log(repo);
     
     const owner = user.username;
     if (!repo) return res.status(400).json({ success: false, message: "Missing repo name" });
