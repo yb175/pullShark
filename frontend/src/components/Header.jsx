@@ -84,19 +84,27 @@ function Header() {
             // ---------------- LOGGED IN ----------------
             <div className="relative" ref={dropdownRef}>
               <button
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-3 p-1 rounded-lg hover:bg-white/5 transition"
-              >
-                {/* INITIALS CIRCLE */}
-                <div className="w-8 h-8 rounded-full bg-white/20 border-2 border-[#00fff0]/50 flex items-center justify-center text-white font-semibold">
-                  {initials}
-                </div>
+  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+  className="flex items-center gap-3 p-1 rounded-lg hover:bg-white/5 transition"
+>
+  {/* Avatar OR Initials */}
+  {user?.avatarUrl ? (
+    <img
+      src={user.avatarUrl}
+      alt="avatar"
+      className="w-8 h-8 rounded-full border-2 border-[#00fff0]/50 object-cover"
+    />
+  ) : (
+    <div className="w-8 h-8 rounded-full bg-white/20 border-2 border-[#00fff0]/50 flex items-center justify-center text-white font-semibold">
+      {initials}
+    </div>
+  )}
 
-                {/* Username */}
-                <span className="text-white/80 text-sm hidden sm:block">
-                  {user?.username || "User"}
-                </span>
-              </button>
+  {/* Username */}
+  <span className="text-white/80 text-sm hidden sm:block">
+    {user?.username || "User"}
+  </span>
+</button>
 
               {/* DROPDOWN */}
               {isDropdownOpen && (

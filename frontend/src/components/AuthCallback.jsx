@@ -1,33 +1,30 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { exchangeCodeForSession } from "../api/auth";
+import { useDispatch } from "react-redux";
+import { exchangeCodeThunk } from "../slice/authSlice";
 
 export default function AuthCallback() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   useEffect(() => {
     const code = searchParams.get("code");
-    if (code) {
-      console.log("Exchanging code:", code);
 
-      exchangeCodeForSession(code)
-        .then(() => {
-          console.log("Login successful, redirecting to /repo");
-          navigate("/repo", { replace: true });
-        })
-        .catch((error) => {
-          console.error("Login failed:", error);
-          navigate("/login", {
-            replace: true,
-            state: { error: error.message || "Login failed" },
-          });
-        });
-    } else {
-      console.log("No code found in URL, redirecting to login");
+    if (!code) {
       navigate("/login", { replace: true });
+      return;
     }
-  }, [navigate, searchParams]);
+
+    dispatch(exchangeCodeThunk(code))
+      .unwrap()
+      .then(() => {
+        navigate("/repo", { replace: true });
+      })
+      .catch(() => {
+        navigate("/login", { replace: true });
+      });
+  }, [dispatch, navigate, searchParams]);
 
   return (
     <div className="min-h-screen flex items-center justify-center">

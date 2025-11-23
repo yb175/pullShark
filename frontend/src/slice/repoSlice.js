@@ -1,9 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { api } from "../api";
+import { api } from "../api/auth";
 
-// -------------------------------
-// FETCH REPOS THUNK
-// -------------------------------
 export const fetchReposThunk = createAsyncThunk(
   "repos/fetch",
   async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
@@ -18,9 +15,6 @@ export const fetchReposThunk = createAsyncThunk(
   }
 );
 
-// -------------------------------
-// SLICE
-// -------------------------------
 const repoSlice = createSlice({
   name: "repos",
   initialState: {
