@@ -28,6 +28,6 @@
  * // Gets redirected to: https://github.com/login/oauth/authorize?client_id=123&redirect_uri=https://app.com/callback&scope=read:user%20user:email%20repo
  */
 export default function redirectUser(req, res) {
-    const redirectURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=http://localhost:5173/login&scope=read:user%20user:email%20repo`;
+    const redirectURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=http://localhost:3000/auth/callback&scope=read:user%20user:email%20repo`
     res.redirect(redirectURL);
 }

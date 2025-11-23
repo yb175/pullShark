@@ -8,10 +8,12 @@ import getUserRepos from "../controllers/auth/getUserRepos.js";
 import getRepoPullRequests from "../controllers/auth/getRepoPullRequests.js";
 const authRouter = express.Router();
 import rateLimiter from "../middlewares/ratelimiter.js";
+import callback from "../controllers/auth/callback.js";
 
 authRouter.get("/redirect", rateLimiter, redirectUser);
 authRouter.get("/exchange/:code",  exchangeToken);
 authRouter.get("/logout", checkBlacklistedToken, logoutUser);
+authRouter.get("/callback", callback);
 
 // Secured endpoints: require not-blacklisted + refresh middleware to attach req.user
 authRouter.get("/repos", checkBlacklistedToken, refreshTokenMiddleware, getUserRepos);
