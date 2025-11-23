@@ -1,35 +1,38 @@
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router";
-import { exchangeCodeThunk } from "../slice/authSlice";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { exchangeCodeForSession } from "../api/auth";
 
 export default function AuthCallback() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
+    const code = searchParams.get("code");
 
     if (code) {
-      dispatch(exchangeCodeThunk(code))
-        .unwrap()
-        .then(() => navigate("/"))
-        .catch(() => navigate("/login"));
+      console.log("Exchanging code:", code);
+
+      exchangeCodeForSession(code)
+        .then(() => {
+          console.log("Login successful, redirecting to /repo");
+          navigate("/repo", { replace: true });
+        })
+        .catch((error) => {
+          console.error("Login failed:", error);
+          navigate("/login", {
+            replace: true,
+            state: { error: error.message || "Login failed" },
+          });
+        });
     } else {
-      navigate("/login");
+      console.log("No code found in URL, redirecting to login");
+      navigate("/login", { replace: true });
     }
-  }, [dispatch, navigate]);
+  }, [navigate, searchParams]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-black via-black to-gray-950 text-white">
-      <div className="text-center">
-        {/* Spinner */}
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#00fff0] mx-auto mb-4"></div>
-
-        {/* Text */}
-        <p>Completing authentication...</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-white">Processing login...</div>
     </div>
   );
 }
