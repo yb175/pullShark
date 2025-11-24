@@ -6,6 +6,7 @@ import logoutUser from "../controllers/auth/logoutuser.js";
 import checkBlacklistedToken from "../middlewares/checkBlacklistedToken.js";
 import getUserRepos from "../controllers/auth/getUserRepos.js";
 import getRepoPullRequests from "../controllers/auth/getRepoPullRequests.js";
+import paginationMiddleware from "../middlewares/pagination.js";
 const authRouter = express.Router();
 import rateLimiter from "../middlewares/ratelimiter.js";
 
@@ -14,9 +15,9 @@ authRouter.get("/exchange/:code",  exchangeToken);
 authRouter.get("/logout", checkBlacklistedToken, logoutUser);
 
 // Secured endpoints: require not-blacklisted + refresh middleware to attach req.user
-authRouter.get("/repos", checkBlacklistedToken, refreshTokenMiddleware, getUserRepos);
+authRouter.get("/repos", checkBlacklistedToken, refreshTokenMiddleware, paginationMiddleware, getUserRepos);
 // Single param `repo` — owner inferred from authenticated user
-authRouter.get("/repos/:repo/pulls", checkBlacklistedToken, refreshTokenMiddleware, getRepoPullRequests);
+authRouter.get("/repos/:repo/pulls", checkBlacklistedToken, refreshTokenMiddleware, paginationMiddleware, getRepoPullRequests);
 
 authRouter.get("/status",rateLimiter, checkBlacklistedToken,refreshTokenMiddleware, (req, res) => res.status(200).json({ success: true, message: "Authenticated" }));
 export default authRouter;

@@ -15,49 +15,42 @@ export default async function getUserRepos(req, res) {
 
     const payload = await getDecryptedGithubToken(accessToken);
 
-    const per_page = 100;
-    let page = 1;
-    let allRepos = [];
+    // Use pagination middleware values if present, otherwise fall back
+    const per_page = (req.pagination && req.pagination.limit) ? req.pagination.limit : 5;
+    const page = (req.pagination && req.pagination.page) ? req.pagination.page : 1;
 
-    while (true) {
-      const response = await axios.get("https://api.github.com/user/repos", {
-        headers: { Authorization: `token ${payload.ghAccessToken}` },
-        params: { page, per_page, sort: "updated" }
-      });
+    const response = await axios.get("https://api.github.com/user/repos", {
+      headers: { Authorization: `token ${payload.ghAccessToken}` },
+      params: { page, per_page, sort: "updated" }
+    });
 
-      const repos = response.data || [];
+    const repos = response.data || [];
 
-      const filtered = repos.map(repo => ({
-        id: repo.id,
-        name: repo.name,
-        full_name: repo.full_name,
-        private: repo.private,
-        url: repo.url,
+    const filtered = repos.map(repo => ({
+      id: repo.id,
+      name: repo.name,
+      full_name: repo.full_name,
+      private: repo.private,
+      url: repo.url,
 
-        owner: repo.owner ? {
-          login: repo.owner.login,
-          id: repo.owner.id,
-          avatar_url: repo.owner.avatar_url,
-          html_url: repo.owner.html_url,
-          type: repo.owner.type
-        } : null,
+      owner: repo.owner ? {
+        login: repo.owner.login,
+        id: repo.owner.id,
+        avatar_url: repo.owner.avatar_url,
+        html_url: repo.owner.html_url,
+        type: repo.owner.type
+      } : null,
 
-        html_url: repo.html_url,
-        description: repo.description,
-        forks_count: repo.forks_count,
-        stargazers_count: repo.stargazers_count,
-        watchers_count: repo.watchers_count,
-        open_issues_count: repo.open_issues_count,
-        language: repo.language
-      }));
+      html_url: repo.html_url,
+      description: repo.description,
+      forks_count: repo.forks_count,
+      stargazers_count: repo.stargazers_count,
+      watchers_count: repo.watchers_count,
+      open_issues_count: repo.open_issues_count,
+      language: repo.language
+    }));
 
-      allRepos = allRepos.concat(filtered);
-
-      if (repos.length < per_page) break;
-      page++;
-    }
-
-    return res.json({ success: true, repos: allRepos });
+    return res.json({ success: true, repos: filtered, pagination: req.pagination || { limit: per_page, page } });
 
   } catch (err) {
     console.error("getUserRepos error:", err.message);

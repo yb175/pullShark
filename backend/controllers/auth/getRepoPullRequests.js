@@ -20,11 +20,14 @@ export default async function getRepoPullRequests(req, res) {
     if (!repo) return res.status(400).json({ success: false, message: "Missing repo name" });
     //console.log(payload.ghAccessToken);
 
+    const per_page = (req.pagination && req.pagination.limit) ? req.pagination.limit : 5;
+    const page = (req.pagination && req.pagination.page) ? req.pagination.page : 1;
+
     const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
       headers: { Authorization: `token ${payload.ghAccessToken}` },
-      params: { state: "open" }
+      params: { state: "open", per_page, page }
     });
-    res.json({ success: true, pulls: response.data });
+    res.json({ success: true, pulls: response.data, pagination: req.pagination || { limit: per_page, page } });
   } catch (err) {
     console.error("getRepoPullRequests error:", err.message);
     res.status(500).json({ success: false, message: err.message });
