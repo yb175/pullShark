@@ -2,6 +2,7 @@ import express from "express" ;
 import { connectDB } from "./config/mongodbconfig.js";
 import dotenv from "dotenv" 
 import authRouter from "./routes/auth.js";
+import llmRouter from "./routes/llm.js";
 import cookieParser from "cookie-parser";
 import redisConnect from "./config/redisConnect.js";
 import cors from "cors"
@@ -20,7 +21,7 @@ app.use(cors({
     credentials:true,
 }))
 app.use("/auth", authRouter) ;
-
+app.use("/llm", llmRouter) ;
 const promises = [connectDB(),redisConnect()] ;
 async function start() {
     try{
