@@ -4,7 +4,7 @@ import { encode } from "@toon-format/toon";
 import cleanDiff from "../../utils/cleanDIff.js";
 import compressForLLM from "../../utils/compressllm.js";
 import prioritizeFiles from "../../utils/smartfile.js";
-import shouldIncludeFile from "../../utils/filetypefiltering.js"; 
+
 export default async function analysePr(req, res) {
   try {
     const accesstoken = req.cookies.accesstoken;
@@ -54,12 +54,12 @@ export default async function analysePr(req, res) {
     const encoded = encode(minimalResponse);
     const sizeInBytes = Buffer.byteLength(encoded, "utf8");
     const sizeInKB = (sizeInBytes / 1024).toFixed(2);
-
+    // const response = await axios.post("https://pullshark-ai.onrender.com/api/analyze",encoded) ; 
     return res.status(200).json({
       success: true,
       sizeInKB,
       sizeInBytes,
-      pr: encoded
+      response : encoded 
     });
 
   } catch (err) {
