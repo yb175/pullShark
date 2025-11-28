@@ -26,7 +26,7 @@ export default async function analysePr(req, res) {
     const { owner, repo, prNumber } = req.params;
     const headers = {
       Authorization: `token ${payload.ghAccessToken}`,
-      "User-Agent": "pullshark",
+      "User-Agent": "pullshark",// ye bheja h kyuki github api me user-agent dena zaruri hota h
     };
 
     const baseUrl = `https://api.github.com/repos/${owner}/${repo}/pulls/${prNumber}`;
