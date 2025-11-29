@@ -31,7 +31,6 @@
 export default function redirectUser(req, res) {
     const callbackBase =
         process.env.GITHUB_CALLBACK_URL ||
-        "https://pullshark.site/api/auth/callback" ||
         "http://localhost:3000/auth/callback";
 
     const redirectURL = 
