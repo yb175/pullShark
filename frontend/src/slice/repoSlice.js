@@ -5,7 +5,7 @@ export const fetchReposThunk = createAsyncThunk(
   "repos/fetch",
   async ({ page = 1, limit = 10 }, { rejectWithValue }) => {
     try {
-      const res = await api.get(`/repos?page=${page}&limit=${limit}`, {
+      const res = await api.get(`/auth/repos?page=${page}&limit=${limit}`, {
         withCredentials: true,
       });
       return res.data;  // { success, repos, pagination }
@@ -36,28 +36,24 @@ const repoSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      .addCase(fetchReposThunk.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-
       .addCase(fetchReposThunk.fulfilled, (state, action) => {
-        state.loading = false;
-        state.repos = action.payload.repos || [];
+  state.loading = false;
 
-        // Pagination
-        state.pagination = {
-          page: action.payload.pagination?.page || 1,
-          hasNextPage: action.payload.pagination?.hasNextPage || false,
-          hasPrevPage: action.payload.pagination?.hasPrevPage || false,
-        };
-      })
+  // Update repos only when changed
+  state.repos = action.payload.repos || [];
 
-      .addCase(fetchReposThunk.rejected, (state, action) => {
-        state.loading = false;
-        state.repos = [];
-        state.error = action.payload?.message || "Failed to fetch repos";
-      });
+  // Mutate existing pagination object (do NOT replace it)
+  const p = action.payload.pagination || {};
+  state.pagination.page = p.page ?? state.pagination.page;
+  state.pagination.hasNextPage = p.hasNextPage ?? state.pagination.hasNextPage;
+  state.pagination.hasPrevPage = p.hasPrevPage ?? state.pagination.hasPrevPage;
+})
+
+.addCase(fetchReposThunk.rejected, (state, action) => {
+  state.loading = false;
+  state.error = action.payload?.message || "Failed to fetch repos";
+  // DO NOT replace repos or pagination
+});
   },
 });
 
