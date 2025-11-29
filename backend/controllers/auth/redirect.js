@@ -27,7 +27,17 @@
  * // User visits endpoint triggering this function
  * // Gets redirected to: https://github.com/login/oauth/authorize?client_id=123&redirect_uri=https://app.com/callback&scope=read:user%20user:email%20repo
  */
+
 export default function redirectUser(req, res) {
-    const redirectURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&redirect_uri=http://localhost:3000/auth/callback&scope=read:user%20user:email%20repo`
-    res.redirect(redirectURL);
+    const callbackBase =
+        process.env.GITHUB_CALLBACK_URL ||
+        "https://pullshark.site/api/auth/callback" ||
+        "http://localhost:3000/auth/callback";
+
+    const redirectURL = 
+        `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}` +
+        `&redirect_uri=${encodeURIComponent(callbackBase)}` +
+        `&scope=read:user%20user:email%20repo`;
+
+    return res.redirect(redirectURL);
 }
