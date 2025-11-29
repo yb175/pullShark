@@ -10,6 +10,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.3",
     "ngrok": "^5.0.0-beta.2",
+    "nodemailer": "^7.0.11",
     "redis": "^5.9.0"
   }
 }

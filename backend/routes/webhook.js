@@ -4,6 +4,6 @@ import handleWebhook from "../controllers/webhook/handleWebhook.js"; // import t
 const router = express.Router(); // create a new router instance
 
 // Use express.raw so the handler receives the raw bytes for signature verification
-router.post("/", express.raw({ type: "application/json" }), handleWebhook);
+router.post("/", express.raw({ type: "*/*" }), handleWebhook);
 
 export default router; // export the configured router
