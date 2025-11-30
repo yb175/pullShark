@@ -98,7 +98,7 @@ export default async function handleWebhook(req, res) {
 
     // --- Fetch commit author email ---
     // Email: analysis started
-    console.log("preparation started");
+    console.log("preparation started");//
     // --- Fetch commit author email ---
     let userEmail = req?.user?.email || "";
     console.log(userEmail || "ni aayi");
@@ -163,17 +163,31 @@ export default async function handleWebhook(req, res) {
       { pr: base64Payload },
       { headers: { "Content-Type": "application/json" } }
     );
-    console.log("Model response:", "response aagaya");
+   // console.log("Model response:", "response aagaya");//
+
+    // --- Extract pre-formatted comment from model response ---
+    const commentText =
+      modelResp.data?.formatted_comment ||
+      "PullShark analysis complete. No specific feedback provided.";
+
+    // --- Post a comment on the PR ---
+    try {
+      await axios.post(
+        pr.comments_url,
+        { body: commentText },
+        { headers: ghHeaders }
+      );
+      console.log(`Comment posted on PR #${pr.number}`);
+    } catch (err) {
+      console.error("Failed to post PR comment:", err.message);
+    }
+
     // Email: analysis done
     if (userEmail) {
       sendEmail({
         to: userEmail,
         subject: `[PullShark] Analysis complete`,
-        text: `Your analysis is complete: ${JSON.stringify(
-          modelResp.data,
-          null,
-          2
-        )}`,
+        text: `Your analysis is complete. We've added a comment to your PR with the details.\n\n${commentText}`,
       }).catch(() => {});
     }
 
