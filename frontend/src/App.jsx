@@ -9,7 +9,7 @@ import RepoPage from './pages/RepoPage';
 import ScrollToHash from './components/ScrollToHash';
 import AuthCallback from './components/AuthCallback';
 import { checkAuthStatusThunk } from "./slice/authSlice";
-
+import PullSharkAppPrompt from './pages/InstallGithubApp';
 function App() {
   const dispatch = useDispatch();
   const [appLoading, setAppLoading] = useState(true);
@@ -44,6 +44,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/repo" element={<RepoPage />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/install-github-app" element={<PullSharkAppPrompt />} />
         </Routes>
       </main>
       <Footer />
