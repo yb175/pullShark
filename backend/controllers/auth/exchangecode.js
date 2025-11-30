@@ -98,6 +98,7 @@ export default async function exchangeToken(req, res) {
         email: user.email,
         userId: user.userId,
         avatarUrl: user.avatarUrl,
+        installationId: user.installationId,
       },
     });
   } catch (err) {
