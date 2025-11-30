@@ -13,7 +13,7 @@ import PullSharkAppPrompt from './pages/InstallGithubApp';
 function App() {
   const dispatch = useDispatch();
   const [appLoading, setAppLoading] = useState(true);
-
+  const {user} = useSelector((state) => state.auth);
 
   useEffect(() => {
     const init = async () => {
@@ -41,10 +41,9 @@ function App() {
         <ScrollToHash />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/repo" element={<RepoPage />} />
+          <Route path="/login" element={!user ? <Login /> : <RepoPage />} />
+          <Route path="/repo" element={user ? <RepoPage /> : <Login />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
-          <Route path="/install-github-app" element={<PullSharkAppPrompt />} />
         </Routes>
       </main>
       <Footer />

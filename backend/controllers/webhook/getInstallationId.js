@@ -19,11 +19,7 @@ export default async function getInstallationId(req, res) {
       { installationId: installationId, installationActive: true }
     );
 
-    return res.json({
-      success: true,
-      message: "GitHub App installed successfully!",
-      installationId,
-    });
+     res.redirect(`${process.env.FRONTEND_URL}/repo`);
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
