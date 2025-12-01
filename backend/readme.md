@@ -54,6 +54,53 @@ The application requires sensitive credentials to function. Create a `.env` file
   * **Source:** [Redis Cloud](https://app.redislabs.com/) or your local terminal.
   * **Note:** If running locally, simply use `localhost` and port `6379`.
 
+***
+
+## 🛡️ GitHub App Permissions (The Policy)
+
+For PullShark to function correctly—authenticating users, reading diffs, and leaving comments—the following configuration must be set in your GitHub App settings: 
+
+
+### 1. General Settings (URLs & Flows)
+
+| Setting | Configuration | Note |
+| :--- | :--- | :--- |
+| **User Authorization Callback URL** | Must be configured. | Used for user login (OAuth). |
+| **Setup URL** | Must be configured. | Where users land after installation. |
+| **Device Flow** | **Enabled** | Necessary for certain future authentication flows. |
+| **Post Installation** | **Redirect on update** | Ensures users are brought back to your site after changing installation settings. |
+| **Active** | **Checked** | Ensures the Webhook is listening. |
+
+---
+
+### 2. Repository Permissions
+
+These permissions allow the AI to read code, leave comments, and trigger actions.
+
+| Permission | Access Level | Purpose |
+| :--- | :--- | :--- |
+| **Actions** | Read-only | To observe CI/CD status. |
+| **Checks** | Read & Write | To post status checks on PRs. |
+| **Contents** | Read-only | To read file contents and retrieve diffs. |
+| **Metadata** | Read-only | Basic info about repositories. |
+| **Pull Requests** | Read & Write | To read PR data and post review comments. |
+| **Webhooks** | Read & Write | To manage webhooks on the repository level. |
+
+### 3. Subscribed Events
+
+These are the specific events GitHub must notify your webhook URL about.
+
+* `Pull request`
+* `Pull request review`
+* `Pull request review comment`
+* `Pull request review thread`
+
+### 4. Organization & Account Permissions
+
+| Permission | Access Level |
+| :--- | :--- |
+| **Organization Events** | Read-only (Issue Types & Webhooks) |
+| **Account Events** | Read-only |
 ### 🐙 GitHub App Integration
 
 You must create a GitHub App to get these credentials.
