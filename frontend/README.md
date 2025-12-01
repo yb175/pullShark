@@ -1,16 +1,68 @@
-# React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🎨 PullShark Frontend
+> **The pretty face of the operation.**
 
-Currently, two official plugins are available:
+![React](https://img.shields.io/badge/React-19-blue) ![Vite](https://img.shields.io/badge/Vite-7-purple) ![Speed](https://img.shields.io/badge/Speed-Blazing-yellow)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+### ⚡ The Stack (Living on the Edge)
+We aren't using legacy tech here. This is straight-up **2025 energy**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Tech | Why? |
+| :--- | :--- |
+| **React 19** ⚛️ | Because we don't look back. |
+| **Vite 7** ⚡ | Hot reload faster than you can blink. |
+| **Tailwind 4** 🎨 | CSS without the headache. |
+| **Framer Motion** 🎬 | Making things bouncy and smooth. |
+| **Redux Toolkit** 🧠 | Remembering things so you don't have to. |
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🚀 How to Run (The Speedrun)
+
+**1. Go inside**
+```bash
+cd frontend
+````
+
+**2. Feed the beast**
+
+```bash
+npm install
+```
+
+**3. The Secret Key 🔑 (REQUIRED)**
+Create a `.env` file in this folder. Paste this exactly.
+*If you skip this, the app will just stare at you blankly.*
+
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_API_URL=
+```
+
+**4. Blast off**
+
+```bash
+npm run dev
+```
+
+👉 **Open:** [http://localhost:5173](https://www.google.com/search?q=http://localhost:5173)
+
+-----
+
+### 📂 The Map
+
+  * **`src/pages`** → The actual screens (Login, Repo Dashboard, etc).
+  * **`src/components`** → Reusable legos (Buttons, Navbars).
+  * **`src/api`** → Calls to the backend (where the real magic happens).
+  * **`src/stores`** → Redux slices (State management).
+
+-----
+
+### 🐛 Scripts
+
+  * `npm run dev` - Start coding.
+  * `npm run build` - Make it production ready.
+  * `npm run lint` - Check if you wrote bad code.
+
+*Now go fix some logic.* 🦈
