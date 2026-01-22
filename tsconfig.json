@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2020", // Ensures compatibility with modern JavaScript features like Symbol and async/await
+    "module": "es2022", // Allows top-level await expressions
+    "lib": ["es2020"], // Includes modern JavaScript features in the compilation
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "skipLibCheck": true, // Skips type checking for node_modules
+    "outDir": "./dist", // Output directory for compiled JS files
+    "strict": true
+  },
+  "include": ["backend/**/*.ts"],
+  "exclude": ["node_modules"]
+}

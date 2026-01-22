@@ -1,12 +1,10 @@
 import crypto from "crypto";
-import axios from "axios";
-import { encode } from "@toon-format/toon";
-import sendEmail from "../../utils/sendEmail.js"; // Import the email utility
-import cleanDiff from "../../utils/cleandiff.js";
-import compressForLLM from "../../utils/compressllm.js";
-import prioritizeFiles from "../../utils/smartfile.js";
-import { log } from "console"; // Keep this if you use log() elsewhere
-import { generateInstallationToken } from "../../utils/githubjwt.js";
+import { prisma } from "../../lib/prisma.js";
+import { analysisQueue } from "../../queues/analysis.queue.js";
+import { Prisma } from "../../generated/prisma/client.js";
+// NOTE : HEAVY LOGIC WOULD MOVE TO WORKER
+
+
 // Controller: handle incoming GitHub webhooks
 export default async function handleWebhook(req, res) {
   try {
@@ -30,8 +28,8 @@ export default async function handleWebhook(req, res) {
       req.rawBody && Buffer.isBuffer(req.rawBody)
         ? req.rawBody
         : req.body && Buffer.isBuffer(req.body)
-        ? req.body
-        : Buffer.from(JSON.stringify(req.body || {}));
+          ? req.body
+          : Buffer.from(JSON.stringify(req.body || {}));
 
     const computedHash = crypto
       .createHmac("sha256", secret)
@@ -66,13 +64,7 @@ export default async function handleWebhook(req, res) {
 
     const action = payload.action;
     console.log(action);
-    const actionable = [
-      "opened",
-      "reopened",
-      "synchronize",
-      "edited",
-      "created",
-    ];
+    const actionable = ["opened", "reopened", "synchronize", "edited"];
     if (!actionable.includes(action)) {
       return res
         .status(200)
@@ -89,111 +81,41 @@ export default async function handleWebhook(req, res) {
         .json({ success: false, message: "No installation id" });
     }
 
-    // --- Get installation token ---
-    const installationToken = await generateInstallationToken(installationId);
-    const ghHeaders = {
-      Authorization: `token ${installationToken}`,
-      "User-Agent": "pullshark",
-    };
-
-    // --- Fetch commit author email ---
-    // Email: analysis started
-    console.log("preparation started");//
-    // --- Fetch commit author email ---
-    let userEmail = req?.user?.email || "";
-    console.log(userEmail || "ni aayi");
+    let analysisRun;
     try {
-      const commits = (await axios.get(pr.commits_url, { headers: ghHeaders }))
-        .data;
-      if (commits && commits.length > 0) {
-        userEmail = commits.at(-1).commit.author.email;
-      }
-    } catch (err) {
-      console.warn("Commit email fetch failed:", err.message);
-    }
-
-    if (userEmail) {
-      sendEmail({
-        to: userEmail,
-        subject: `[PullShark] Analysis started for PR #${pr.number}`,
-        text: `We are analyzing your PR: "${pr.title}"`,
-      }).catch(() => {});
-    }
-
-    // --- Fetch diff ---
-    let diffText = "";
-    try {
-      diffText = (
-        await axios.get(pr.diff_url, {
-          headers: ghHeaders,
-          responseType: "text",
-        })
-      ).data;
-    } catch (err) {
-      console.warn("Diff fetch failed:", err.message);
-    }
-
-    // --- Fetch changed files ---
-    let filesList = [];
-    try {
-      filesList = (await axios.get(pr.url + "/files", { headers: ghHeaders }))
-        .data;
-    } catch (err) {
-      console.warn("Files fetch failed:", err.message);
-    }
-
-    // Prepare LLM payload
-    const cleanedDiff = cleanDiff(diffText);
-    const prioritized = prioritizeFiles(filesList);
-
-    const minimalResponse = compressForLLM({
-      title: pr.title,
-      description: pr.body,
-      author: pr.user?.login,
-      changedFiles: prioritized.map((f) => f.filename),
-      diff: cleanedDiff,
-    });
-
-    const encoded = encode(minimalResponse);
-    const base64Payload = Buffer.from(encoded, "utf8").toString("base64");
-
-    // --- Call your model ---
-    const modelResp = await axios.post(
-      "https://pullshark-ai.onrender.com/api/analyze",
-      { pr: base64Payload },
-      { headers: { "Content-Type": "application/json" } }
-    );
-   // console.log("Model response:", "response aagaya");//
-
-    // --- Extract pre-formatted comment from model response ---
-    const commentText =
-      modelResp.data?.formatted_comment ||
-      "PullShark analysis complete. No specific feedback provided.";
-
-    // --- Post a comment on the PR ---
-    try {
-      await axios.post(
-        pr.comments_url,
-        { body: commentText },
-        { headers: ghHeaders }
+      analysisRun = await prisma.analysisRun.create({
+        data: {
+          pr_number: pr.number,
+          pr_owner: pr.user.login,
+          repo_name: repo.name,
+          commit_sha: pr.head.sha,
+        },
+      });
+      console.log("Added into queue") ; 
+      await analysisQueue.add(
+        "analyze-pr",
+        {
+          analysisRunId: analysisRun.id,
+          installationId,
+        },
+        {
+          jobId: analysisRun.id, // queue-level idempotency
+        },
       );
-      console.log(`Comment posted on PR #${pr.number}`);
-    } catch (err) {
-      console.error("Failed to post PR comment:", err.message);
-    }
-
-    // Email: analysis done
-    if (userEmail) {
-      sendEmail({
-        to: userEmail,
-        subject: `[PullShark] Analysis complete`,
-        text: `Your analysis is complete. We've added a comment to your PR with the details.\n\n${commentText}`,
-      }).catch(() => {});
+    } catch(error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        console.log("Allready queued");
+        // Already queued → idempotent no-op
+        return res.status(200).json({ success: true });
+      }
+      throw error;
     }
 
     return res.status(200).json({
       success: true,
-      model: modelResp.data,
     });
   } catch (err) {
     console.error("Webhook error:", err.message);
