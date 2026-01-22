@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AnalysisState{
+  PENDING // in queue for processing
+  PROCESSING // currently being processed
+  SUCCESS // analysis completed successfully
+  FAILED // analysis failed
+  TIMEOUT // analysis timed out
+}
+model AnalysisRun {
+  id String @id @default(uuid()) 
+  
+  // Identity 
+  pr_owner String
+  repo_name String
+  pr_number Int
+  commit_sha String
+
+  // state machine 
+  state AnalysisState @default(PENDING)
+
+  // Retry and control 
+  retry_count Int @default(0)
+  max_retries Int @default(3)
+  lastError String? 
+
+  // observability
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  startedAt DateTime?
+  finishedAt DateTime?
+
+  @@unique([pr_owner, repo_name, pr_number, commit_sha])
+}
