@@ -31,12 +31,17 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
   };
 
   // pr meta data
-  const prResp = await axios.get(
-    `https://api.github.com/repos/${pr_owner}/${repo_name}/pulls/${pr_number}`,
-    { headers: ghHeaders },
-  );
-
-  const pr = prResp.data;
+  let pr;
+  try {
+    pr = (
+      await axios.get( 
+        `https://api.github.com/repos/${pr_owner}/${repo_name}/pulls/${pr_number}`,
+        { headers: ghHeaders },
+      )
+    ).data;
+  } catch (err) {
+    throw new Error(`PR_FETCH_FAILED: ${err.message}`);
+  }
 
   // fetch email
   let userEmail = "";
@@ -72,6 +77,7 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
     ).data;
   } catch (err) {
     console.warn("Diff fetch failed:", err.message);
+    throw new Error(`Diff fetch failed ${err.message}`);
   }
 
   // fetch files
@@ -81,6 +87,7 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
       .data;
   } catch (err) {
     console.warn("Files fetch failed:", err.message);
+    throw new Error(`Files fetch failed ${err.message}`);
   }
 
   // Prepare LLM payload
@@ -132,6 +139,7 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
     );
   } catch (err) {
     console.error("Failed to post PR comment:", err.message);
+    throw new Error(`Failed to post PR comment ${err.message}`);
   }
 
   // email analysis complete
@@ -149,4 +157,3 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
     modelResponse: modelResp.data,
   };
 }
-

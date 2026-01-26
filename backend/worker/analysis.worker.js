@@ -47,6 +47,10 @@ const analysisWorker = new Worker(
       });
     } catch (error) {
       console.error("Error processing job:", error);
+      // TODO(v2):
+      // Allow re-analysis for FAILED/TIMEOUT AnalysisRun
+      // with capped retries per commit_sha
+
       await prisma.analysisRun.update({
         where: {
           id: job.data.analysisRunId,
