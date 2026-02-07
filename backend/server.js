@@ -7,6 +7,7 @@ import webhookRouter from "./routes/webhook.js";
 import cookieParser from "cookie-parser";
 import redisConnect from "./config/redisConnect.js";
 import cors from "cors"
+dotenv.config() ; 
 const app = express() ;
 
 app.use(cookieParser())
@@ -20,7 +21,6 @@ app.use(
   })
 );
 
-dotenv.config() ; 
 app.use(express.urlencoded({extended:true, verify: (req, res, buf) => { req.rawBody = buf; } })) ;
 app.use("/auth", authRouter) ;
 app.use("/llm", llmRouter) ;
@@ -30,7 +30,7 @@ async function start() {
     try{
         await Promise.all(promises) ; 
         const PORT = process.env.PORT || 3000 ;
-        app.listen(PORT,()=>console.log("Server started at port 3000")) ; 
+        app.listen(PORT,"0.0.0.0",()=>console.log("Server started at port 3000")) ; 
     }catch(err){
         console.log(err) ; 
     }

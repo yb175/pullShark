@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  worker:
+    build: ./backend
+    command: node worker/analysis.worker.js
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+    depends_on:
+      - backend
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    restart: unless-stopped

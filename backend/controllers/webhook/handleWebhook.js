@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { prisma } from "../../lib/prisma.js";
 import { analysisQueue } from "../../queues/analysis.queue.js";
-import { Prisma } from "../../generated/prisma/client.js";
+import { Prisma } from "@prisma/client";
 // NOTE : HEAVY LOGIC WOULD MOVE TO WORKER
 
 

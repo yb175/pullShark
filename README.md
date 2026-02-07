@@ -69,8 +69,27 @@ We won't spam you about trailing spaces. We only speak up when there's a real ri
 | **Predicts Crashes?** | ❌ | 🤷‍♂️ | ✅ **YES** |
 | **Prevents Downtime?** | ❌ | ❌ | ✅ **YES** |
 
----
+--- 
+## Running with Docker
 
+Prerequisites:
+
+- Docker
+- Docker Compose
+
+### Creating the image 
+```bash
+docker compose up --build
+```
+
+### Running the container 
+```bash
+docker compose up  
+```
+### Stopping the container 
+```bash
+docker compose down  
+```
 ### 🤝 Join the School
 
 Stop letting "happy path" programming break your builds. Let PullShark handle the deep waters.
