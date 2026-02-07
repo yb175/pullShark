@@ -30,7 +30,7 @@ async function start() {
     try{
         await Promise.all(promises) ; 
         const PORT = process.env.PORT || 3000 ;
-        app.listen(PORT,"0.0.0.0",()=>console.log("Server started at port 3000")) ; 
+        app.listen(PORT,"0.0.0.0",()=>console.log(`Server started at port ${PORT}`)) ; 
     }catch(err){
         console.log(err) ; 
     }
