@@ -30,16 +30,24 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
     "User-Agent": "pullshark",
   };
 
+  console.log("Fetching PR metadata with:", {
+    pr_owner,
+    repo_name,
+    pr_number,
+    installationToken,
+  });
+
   // pr meta data
   let pr;
   try {
     pr = (
-      await axios.get( 
+      await axios.get(
         `https://api.github.com/repos/${pr_owner}/${repo_name}/pulls/${pr_number}`,
-        { headers: ghHeaders },
+        { headers: ghHeaders }
       )
     ).data;
   } catch (err) {
+    console.error("GitHub API request failed:", err.response?.data || err.message);
     throw new Error(`PR_FETCH_FAILED: ${err.message}`);
   }
 
@@ -109,7 +117,7 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
 
   try {
     modelResp = await axios.post(
-      "https://pullshark-ai.onrender.com/api/analyze",
+      process.env.LLM_ANALYSIS_URL,
       { pr: base64Payload },
       { headers: { "Content-Type": "application/json" } },
     );
