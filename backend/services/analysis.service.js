@@ -107,9 +107,15 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
   const encoded = encode(minimalResponse);
   const base64Payload = Buffer.from(encoded, "utf8").toString("base64");
 
-  // Validate LLM_ANALYSIS_URL is set
-  if (!process.env.LLM_ANALYSIS_URL || typeof process.env.LLM_ANALYSIS_URL !== 'string' || process.env.LLM_ANALYSIS_URL.trim() === '') {
+  // Validate and normalize LLM endpoint
+  const llmUrl = process.env.LLM_ANALYSIS_URL?.trim();
+  if (!llmUrl) {
     throw new Error("LLM_ANALYSIS_URL is not set or is empty");
+  }
+  try {
+    new URL(llmUrl);
+  } catch {
+    throw new Error("LLM_ANALYSIS_URL is not a valid URL");
   }
 
   let modelResp;
