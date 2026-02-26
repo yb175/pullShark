@@ -10,8 +10,9 @@ const userSchema = new mongoose.Schema({
   userId: { type: String, required: true },
   username: { type: String, required: true },
   email: { type: String, required: true },
-  accessToken: { type: String, required: true },
-  refreshToken: { type: String },// will be set when user logs in
+  avatarUrl: { type: String, default: ""},
+  refreshToken: { type: String },
+  refreshTokenExpiresAt: { type: Date },
   connectedRepos: [connectedRepoSchema],
   usageStats: { testRuns: { type: Number, default: 0 } },
 }, { timestamps: true });

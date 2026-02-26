@@ -19,7 +19,18 @@ export default async function logoutUser(req, res) {
       }
     }
 
-    const userId = req.user?.id || req.body.userId;
+
+    // Extract userId from access token payload (verify signature)
+    let userId;
+    if (accessToken) {
+      try {
+        const payload = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
+        userId = payload.id;
+        console.log("userid found: " + userId);
+      } catch (e) {
+      throw new error ("userid couldnt be found" + e);  
+      }
+    }
     if (userId) {
       await UserModel.updateOne({ userId }, { $unset: { refreshToken: "" } });
     }
