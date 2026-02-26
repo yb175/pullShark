@@ -5,6 +5,8 @@ services:
       - "3000:3000"
     env_file:
       - ./backend/.env
+    environment:
+      - LLM_ANALYSIS_URL=http://llm:8000  # Add this line
     restart: unless-stopped
     depends_on:
       - llm
