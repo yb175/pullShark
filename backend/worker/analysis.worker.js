@@ -70,7 +70,6 @@ const analysisWorker = new Worker(
 
 analysisWorker.on("completed", (job) => {
   console.log(`Job with ID ${job.id} has been completed.`);
-  console.log(`Result:`, job.returnvalue);
 });
 
 analysisWorker.on("failed", (job, err) => {
