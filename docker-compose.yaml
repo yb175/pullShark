@@ -25,8 +25,3 @@ services:
     depends_on:
       - backend
 
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:5173"
-    restart: unless-stopped
