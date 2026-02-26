@@ -30,12 +30,6 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
     "User-Agent": "pullshark",
   };
 
-  console.log("Fetching PR metadata with:", {
-    pr_owner,
-    repo_name,
-    pr_number,
-    installationToken,
-  });
 
   // pr meta data
   let pr;
@@ -112,6 +106,11 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
 
   const encoded = encode(minimalResponse);
   const base64Payload = Buffer.from(encoded, "utf8").toString("base64");
+
+  // Validate LLM_ANALYSIS_URL is set
+  if (!process.env.LLM_ANALYSIS_URL || typeof process.env.LLM_ANALYSIS_URL !== 'string' || process.env.LLM_ANALYSIS_URL.trim() === '') {
+    throw new Error("LLM_ANALYSIS_URL is not set or is empty");
+  }
 
   let modelResp;
 
