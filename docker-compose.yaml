@@ -12,8 +12,8 @@ services:
       - llm
   llm:
     image: yb175/pullshark-llm:latest
-    expose:
-      - "8000"
+    ports:
+      - "8000:8000"
     restart: unless-stopped
 
   worker:

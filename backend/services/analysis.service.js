@@ -72,10 +72,16 @@ export default async function runAnalysis({ analysisRunId, installationId }) {
   let diffText = "";
   try {
     diffText = (
-      await axios.get(pr.diff_url, {
-        headers: ghHeaders,
-        responseType: "text",
-      })
+      await axios.get(
+        `https://api.github.com/repos/${pr_owner}/${repo_name}/pulls/${pr_number}.diff`,
+        {
+          headers: {
+            ...ghHeaders,
+            Accept: "application/vnd.github.v3.diff",
+          },
+          responseType: "text",
+        }
+      )
     ).data;
   } catch (err) {
     console.warn("Diff fetch failed:", err.message);
