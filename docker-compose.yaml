@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   backend:
     build: ./backend
@@ -7,15 +5,15 @@ services:
       - "3000:3000"
     env_file:
       - ./backend/.env
+    environment:
+      - LLM_ANALYSIS_URL=http://llm:8000  # Add this line
     restart: unless-stopped
     depends_on:
       - llm
   llm:
-    build: ./llm
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./llm/.env
+    image: yb175/pullshark-llm:latest
+    expose:
+      - "8000"
     restart: unless-stopped
 
   worker:
