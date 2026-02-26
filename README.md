@@ -70,25 +70,39 @@ We won't spam you about trailing spaces. We only speak up when there's a real ri
 | **Prevents Downtime?** | ❌ | ❌ | ✅ **YES** |
 
 --- 
-## Running with Docker
+## Running the App
+
+### Frontend (Local)
+
+Prerequisites:
+- Node.js 20+
+
+```bash
+cd frontend
+npm install
+npm run dev  # Runs on http://localhost:5173
+```
+
+### Backend (Docker)
 
 Prerequisites:
 
 - Docker
 - Docker Compose
 
-### Creating the image 
+#### Creating the image
 ```bash
 docker compose up --build
 ```
 
-### Running the container 
+#### Running the container
 ```bash
-docker compose up  
+docker compose up
 ```
-### Stopping the container 
+
+#### Stopping the container
 ```bash
-docker compose down  
+docker compose down
 ```
 ### 🤝 Join the School
 
