@@ -1,0 +1,23 @@
+version: "2"
+reviews:
+  profile: chill
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: false
+  auto_review:
+    enabled: true
+    drafts: false
+  instructions: |
+    You are reviewing production-grade code.
+    Focus on:
+    - Security vulnerabilities
+    - Performance bottlenecks (especially database queries)
+    - Proper error handling
+    - Clean architecture and separation of concerns
+    - Avoiding unnecessary complexity
+    Be concise and actionable.
+    Avoid generic praises.
+chat:
+  auto_reply: true
