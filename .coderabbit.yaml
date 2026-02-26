@@ -1,0 +1,72 @@
+reviews:
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        Act as a senior production reviewer. Be concise and actionable. Do not use generic praise.
+        Prioritize in order:
+        1) Security vulnerabilities — injection (SQL/NoSQL/command/path), XSS/CSRF, authN/authZ gaps, SSRF, unsafe deserialization, insecure eval/exec, secrets in code/logs, weak/DIY crypto.
+        2) Performance bottlenecks — especially database access: N+1 patterns, full scans, unbounded results, repeated queries in loops, missing indexes, SELECT *, chatty network calls. Propose concrete fixes.
+        3) Error handling — no silent catches or log-only handling; preserve stack/context; map to precise HTTP status codes; input validation at boundaries; retries with jittered backoff when idempotent; circuit breaking/timeouts where needed.
+        4) Clean architecture & SoC — thin controllers/handlers; business logic in services; persistence in repositories/DAOs; no infra types leaking across layers; small, cohesive modules.
+        5) Keep it simple — reduce cyclomatic complexity, shorten long functions, remove dead code and duplicated logic. Prefer clarity over cleverness.
+        When suggesting changes, provide minimal diffs or short code blocks.
+
+    - path: "**/*.{sql,psql}"
+      instructions: |
+        Query review:
+        - Enforce pagination/limits; avoid unbounded scans and SELECT *.
+        - Call out missing indexes for JOIN/WHERE/ORDER BY; suggest composite/covering indexes when appropriate.
+        - Prefer parameterized queries; forbid string-concatenated SQL.
+        Migration safety:
+        - Prefer concurrent index creation where supported; avoid long exclusive locks.
+        - Use two-step destructive changes (add-new → backfill in batches → switch reads/writes → drop-old).
+        - For backfills, require batched/iterative jobs with checkpoints and retry-safe semantics.
+
+    - path: "**/migrations/**/*"
+      instructions: |
+        Guardrails:
+        - Zero-downtime by default; avoid table rewrites on hot paths.
+        - Batch/backfill with small chunks and index-friendly order; add timeouts and retries.
+        - Validate rollback plan; verify new constraints/indexes before flips; measure expected lock duration.
+
+    - path: "**/*.{js,jsx,ts,tsx}"
+      instructions: |
+        Security:
+        - No eval/new Function; sanitize/escape any user-derived HTML; treat dangerouslySetInnerHTML as high risk.
+        - Use parameterized DB calls/ORM bindings; forbid string-built queries.
+        Performance:
+        - Avoid await inside Array.forEach; prefer for..of with await or Promise.all with bounded concurrency.
+        - Hoist repeated queries out of loops; prefer bulk ops/transactions.
+        Error handling:
+        - Use typed/structured errors; wrap external errors with context; never swallow rejections.
+        - Validate inputs with schemas (e.g., zod/joi) at boundaries.
+
+    - path: "**/*.py"
+      instructions: |
+        Security: parameterized DB queries (psycopg/SQLAlchemy binds), no shell=True without strict args, safe YAML/JSON loaders.
+        Performance: avoid per-row queries in loops; use SELECT IN/bulk ops; profile hotspots; prefer generators/iterators for large streams.
+        Errors: raise domain-specific exceptions; add context; avoid bare except; map to precise HTTP/status codes.
+
+    - path: "**/*.go"
+      instructions: |
+        Security: use database/sql placeholders; validate/escape inputs; no exec.Command with user args without allowlists and context timeouts.
+        Performance: watch allocations in hot paths; avoid per-iteration DB calls; prefer context-aware concurrency with bounded workers.
+        Errors: wrap with %w; check and handle all returned errors; propagate context.Context with deadlines.
+
+    - path: "**/Dockerfile*"
+      instructions: |
+        - Pin base image by digest; run as non-root; drop unnecessary packages; use distroless/scratch where possible.
+        - No secrets in ENV/ARG; prefer COPY --chown; verify minimal layers and explicit versions.
+
+    - path: ".github/workflows/*.yml"
+      instructions: |
+        - Avoid pull_request_target; set minimal GITHUB_TOKEN permissions; pin actions by commit SHA.
+        - Restrict write permissions; avoid plaintext secrets; gate deploys behind required checks.
+
+    - path: "**/*.{yml,yaml}"
+      instructions: |
+        For Kubernetes-like manifests: require runAsNonRoot, readOnlyRootFilesystem, drop NET_RAW, set resource requests/limits, and avoid :latest tags.
+
+  tools:
+    ast-grep:
+      essential_rules: true
