@@ -1,100 +1,123 @@
 # 🦈 PullShark AI
-> **Catch logic bombs before they blow up production.**
 
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)]() [![Bug Hunter](https://img.shields.io/badge/Status-Hungry-red.svg)]() [![Risk Level](https://img.shields.io/badge/Risk_Level-Zero-blue.svg)]()
+> Automated PR analysis focused on reliability, edge cases, and risky logic paths.
 
----
-
-### 🤔 The Problem: "But it passed the Linter!"
-
-We've all been there.
-1. You write code.
-2. The linter says "No syntax errors! ✅"
-3. The tests pass.
-4. You merge to production.
-5. **The server crashes because of an infinite loop in an edge case nobody thought of.** 💥
-
-Standard tools check your **syntax** (commas, brackets, styles). They don't check your **logic**.
-
-### 💡 The Solution: Meet PullShark
-
-**PullShark AI** is an automated Senior Engineer that lives in your Pull Requests. It doesn't care about your indentation; it cares about your **code's behavior**.
-
-It simulates execution paths to find "Logic Bombs"—infinite loops, resource exhaustion, and unhandled edge cases—that human reviewers and standard linters often miss.
+ 
 
 ---
 
-### 📸 See It In Action
+## 🤔 Why PullShark?
+
+Traditional linters and formatters are great at catching syntax and style issues, but many production issues come from logic errors, risky edge cases, or unexpected execution paths.
+
+PullShark is an experimental automated code review system that analyzes pull requests and highlights potentially risky logic changes before they get merged.
+
+The goal isn’t to replace human review — it’s to help developers catch issues earlier and focus attention on high-risk areas.
+
+---
+
+## ⚡ What It Currently Focuses On
+
+* Detecting potentially risky control-flow patterns
+* Highlighting edge-case heavy code paths
+* Surfacing logic that may lead to resource exhaustion or unstable execution
+* Generating review notes and testing suggestions for suspicious changes
+* Reducing noisy review comments and focusing on meaningful risks
+
+---
+
+## 🏗️ Built Around
+
+* GitHub App webhooks
+* Background PR analysis pipelines
+* LLM-assisted review workflows
+* Redis-backed processing
+* Async job execution
+* Reliability-first backend design
+
+---
+
+## 📸 Demo
+
 [![Watch the video](https://img.youtube.com/vi/_3XEFBSeCr8/maxresdefault.jpg)](https://www.youtube.com/watch?v=_3XEFBSeCr8)
 
+---
 
-> **The "One-Line Change" Disaster:**
-> In our demo, a developer changed a simple log message. A linter would call this "trivial."
-> **PullShark saw the truth:** That change was inside a conditional block where the `else` statement contained a `while(true)` loop that would freeze the server if the input wasn't perfect.
-> **Result:** Crisis averted. 🛑
+## ⚙️ Running Locally
+
+### Prerequisites
+
+* Node.js
+* Docker
+* Docker Compose
+* GitHub App credentials
+* MongoDB instance
+* Redis instance
 
 ---
 
-### 🚀 Key Features
+### 1. Clone the Repository
 
-**🧠 Behavioral Analysis (Not Just Regex)**
-PullShark understands control flow. It knows that `while(true)` is fine in a background worker but **fatal** in a request handler.
-
-**🛡️ Security First**
-It flags potential **Denial of Service (DoS)** vectors where user input could trick your app into hanging or consuming 100% CPU.
-
-**🧪 Automatic Test Architect**
-Don't just fix the bug—prove it's fixed. PullShark generates **Checklists & Test Plans** for QA, specifically targeting the edge cases you missed (e.g., *"What happens if this API returns `null` instead of `1`?"*).
-
-**💬 No Noise, Just Signal**
-We won't spam you about trailing spaces. We only speak up when there's a real risk. If PullShark comments, **you should listen.**
+```bash
+git clone https://github.com/yb175/pullShark.git
+cd pullShark
+```
 
 ---
 
-### ⚡ How It Works
+### 2. Install Dependencies
 
-1.  **Install the App:** Add PullShark to your GitHub repo (SaaS or Self-Hosted).
-2.  **Open a PR:** Work as usual.
-3.  **The Shark Swims:** PullShark silently analyzes the logic changes in the background.
-4.  **The Bite:** If a high-risk logic error is found, PullShark posts a detailed alert with a reproduction path.
+```bash
+npm install
+```
 
 ---
 
-### 🥊 PullShark vs. The Rest
+### 3. Configure Environment Variables
 
-| Feature | 🤖 Standard Linter | 🐰 Other AI Bots | 🦈 PullShark |
-| :--- | :---: | :---: | :---: |
-| Checks Syntax? | ✅ | ✅ | ✅ |
-| Writes Poems? | ❌ | ✅ | ❌ (We're busy) |
-| **Predicts Crashes?** | ❌ | 🤷‍♂️ | ✅ **YES** |
-| **Prevents Downtime?** | ❌ | ❌ | ✅ **YES** |
+Create a `.env` file in the project root and add the required credentials:
 
---- 
-## Running with Docker
+```env
+MONGODB_URI=
+REDIS_HOST=
+REDIS_PORT=
+GITHUB_APP_ID=
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+GITHUB_PRIVATE_KEY=
+GITHUB_WEBHOOK_SECRET=
+JWT_SECRET_KEY=
+```
 
-Prerequisites:
+You can find a more detailed setup guide in the backend documentation.
 
-- Docker
-- Docker Compose
+---
 
-### Creating the image 
+### 4. Start Services with Docker
+
 ```bash
 docker compose up --build
 ```
 
-### Running the container 
-```bash
-docker compose up  
-```
-### Stopping the container 
-```bash
-docker compose down  
-```
-### 🤝 Join the School
+---
 
-Stop letting "happy path" programming break your builds. Let PullShark handle the deep waters.
+### 5. Run the Development Server
 
-**[Get Started Now]** • **[Read the Docs]** • **[Contact Sales]**
+```bash
+npm run dev
+```
+
+The server should now be running locally.
 
 ---
-*Built with ❤️ (and safety checks) by the PullShark Team.*
+
+
+## 🚀 Current Direction
+
+PullShark is still evolving, but the broader idea is to explore how automated systems can assist engineers in reviewing complex pull requests, identifying risky behavior, and improving developer workflows around code review.
+
+---
+
+## 🤝 Contributions
+
+Contributions, feedback, and discussions are always welcome.
