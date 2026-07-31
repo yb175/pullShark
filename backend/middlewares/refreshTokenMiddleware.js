@@ -109,9 +109,12 @@ export default async function refreshGitHubTokenMiddleware(req, res, next) {
       );
 
       // Set the new cookie
+      const isProduction = process.env.NODE_ENV === "production";
       res.cookie("accesstoken", newAppAccessToken, {
         httpOnly: true,
         maxAge: 2 * 60 * 60 * 1000,
+        sameSite: isProduction ? "none" : "lax",
+        secure: isProduction,
       });
 
       // Attach the updated user to the request for the next handler

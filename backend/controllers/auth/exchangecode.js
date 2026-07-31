@@ -85,9 +85,12 @@ export default async function exchangeToken(req, res) {
 
     await user.save();
 
+    const isProduction = process.env.NODE_ENV === "production";
     res.cookie("accesstoken", accessToken, {
       httpOnly: true,
       maxAge: 2 * 60 * 60 * 1000,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
     });
     req.user = user ; 
     res.status(201).json({

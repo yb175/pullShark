@@ -35,8 +35,13 @@ export default async function logoutUser(req, res) {
       await UserModel.updateOne({ userId }, { $unset: { refreshToken: "" } });
     }
 
-    res.clearCookie("accesstoken");
-    res.clearCookie("refreshToken");
+    const isProduction = process.env.NODE_ENV === "production";
+    const clearOptions = {
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
+    };
+    res.clearCookie("accesstoken", clearOptions);
+    res.clearCookie("refreshToken", clearOptions);
     res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (err) {
     res.status(500).json({ success: false, message: "Logout failed" });
