@@ -6,7 +6,9 @@ import llmRouter from "./routes/llm.js";
 import webhookRouter from "./routes/webhook.js";
 import cookieParser from "cookie-parser";
 import redisConnect from "./config/redisConnect.js";
-import cors from "cors"
+import cors from "cors";
+// 🦈 Release the worker shark! Processing PR analysis right alongside Express 🚀
+import "./worker/analysis.worker.js";
 dotenv.config() ; 
 const app = express() ;
 app.set("trust proxy", 1);
