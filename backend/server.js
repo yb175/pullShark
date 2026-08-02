@@ -24,7 +24,12 @@ app.use(
     credentials: true,
   })
 );
-
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Server is up"
+  });
+});
 app.use(express.urlencoded({extended:true, verify: (req, res, buf) => { req.rawBody = buf; } })) ;
 app.use("/auth", authRouter) ;
 app.use("/llm", llmRouter) ;
